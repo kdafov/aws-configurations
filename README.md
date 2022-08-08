@@ -74,3 +74,6 @@ return return_object
 ## Connect Kendra to a Lambda funcion
 1. TBC
 
+
+## Update Lambda permissions so it can access Kendra
+1. TBC

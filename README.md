@@ -1,9 +1,8 @@
-# Python script connected to a chatbot which is created using AWS Lex, AWS Kendra used for document parsing, and serverless architecture (AWS Lambda) to provide a natural language processing conversations
+# AWS Configuration file featuring AWS Lex,
 
-Python script: Simple script to send questions to the chatbot and retrieve answers\
-AWS Lex: Chatbot interface with multiple configurations for the best user experience\
-AWS Lambda: Serverless functions that will link all AWS components
-AWS Kendra: A service that will scrape web pages
+*AWS Lex*: Chatbot interface with multiple configurations for the best user experience\
+*AWS Lambda*: Serverless functions that will link all AWS components
+*AWS Kendra*: A service that will scrape web pages and/or PDF files to match content to input word and return matched content
 
 ## Create a bot with AWS Lex
 1. Go to AWS Lex Console and create a new bot
@@ -17,7 +16,7 @@ AWS Kendra: A service that will scrape web pages
 ``You should be able to prompt the slots you created using a sample utterance.``
 
 
-## Setup AWS Lambda (Python)
+## Setup AWS Lambda (Python 3.9)
 1. Inside the following block of code `def lambda_handler(event, context):` add `print(event)`
 2. Go back to AWS Lex Console and inside your Intent configuration
 3. Under Fulfilment section, click advanced options, under Fulfilment Lambda code hook, select `Use a Lambda function for fulfilment` checkbox
@@ -49,12 +48,10 @@ return_object = {
         {
           "contentType": "PlainText",
           "content": "First response",
-
         },
         {
             "contentType":"PlainText",
             "content": "Second response"
-
         }
     ]
 }
@@ -68,12 +65,33 @@ return return_object
 
 
 ## Create Kendra index and datasource (PDF)
-1. TBC
+1. Create an index and follow the steps
+2. Add data source from either S3 or Web Crawler
+3. Test your kendra index internally by using the `Search indexed content` from the navigation menu
+4. Create a new lambda function and add the following code:
+```
+kendra = boto3.client("kendra")
+
+response = kendra.query(
+    QueryText = event['inputTranscript'],
+    IndexId = "{ PUT_YOUR_KENDRA_INDEX_ID_HERE }")
+    
+answer = response["ResultItems"][0]["DocumentExcerpt"]["Text"]
+```
+**Note:** The response from Kendra is stored in the `answer` variable. Use the above response structure for Lex to return it properly.
+
+5. In the IAM panel add appropriate permissions (Kendra permission) to your Lambda function.
+6. Test
 
 
-## Connect Kendra to a Lambda funcion
-1. TBC
-
-
-## Update Lambda permissions so it can access Kendra
-1. TBC
+## Create a layer and link it to lambda function
+1. On local machine, `cd` to the python project you want to import as a layer
+2. Make a new directory inside using `mkdir -p layer/python/lib/python3.9/site-packages/ `
+3. Install PIP packages using the command `pip install { MODULE_NAME } -t layer/python/lib/python3.9/site-packages/ `
+4. Navigate to the layer folder and zip it: `cd layer` followed by `zip -r mypackage.zip *  `
+5. In AWS Lambda select Layers under Additional resources from the navigation menu
+6. Create new layer and upload the zip file generated from step 4
+7. Select compatible architectures (x86_64 default) and add runtime (Python 3.9 in this example) and click `Create`
+8. Back inside your lambda function, in the Layers section at the bottom of the screen, click on `Add a layer` 
+9. Select `Custom layers`, add you AWS Layers and click `Add`
+10. Test

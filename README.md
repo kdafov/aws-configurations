@@ -95,3 +95,29 @@ answer = response["ResultItems"][0]["DocumentExcerpt"]["Text"]
 8. Back inside your lambda function, in the Layers section at the bottom of the screen, click on `Add a layer` 
 9. Select `Custom layers`, add you AWS Layers and click `Add`
 10. Test
+
+
+## Create API Gateway
+1. Go to the API Gateway console and click `Create API`
+2. Click on `Build` for the non-private REST API version
+3. Give it name and description and click `Create`
+4. In the Resources section click on `Actions` and select `Create method` and select `GET`
+5. Select Lambda function to which to link the API endpoint\
+If you need to create one add the following content to it:
+```
+responseObject = {
+    'statusCode': 200,
+    'headers': {
+        "Access-Control-Allow-Headers" : "Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token",
+        "Access-Control-Allow-Origin": "*",
+        "Access-Control-Allow-Methods": "POST,OPTIONS"
+    },
+    'message': 'This is the response message from my GET method'
+}
+return responseObject
+```
+6. Click `Save` and `OK`
+7. Go to the `Actions` menu and select `Deploy API`
+8. For `Deployment stage` create new one and give it a name and click `Deploy`
+9. Test the URL
+

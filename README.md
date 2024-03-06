@@ -1,7 +1,7 @@
 # AWS Configuration file featuring AWS Lex,
 
 *AWS Lex*: Chatbot interface with multiple configurations for the best user experience\
-*AWS Lambda*: Serverless functions that will link all AWS components
+*AWS Lambda*: Serverless functions that will link all AWS components\
 *AWS Kendra*: A service that will scrape web pages and/or PDF files to match content to input word and return matched content
 
 ## Create a bot with AWS Lex
